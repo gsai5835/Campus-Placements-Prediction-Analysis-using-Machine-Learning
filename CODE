@@ -1,0 +1,46 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report 
+
+# Load the dataset 
+data = pd.read_csv("campus_placement_data.csv") 
+
+# Feature engineering (example)
+data['degree_and_specialization'] = data['degree_p'] * data['specialization']  
+
+# Separate features and target variable
+X=data[['ssc_p','hsc_p',‘degree_p','workex','etest_p', degree_and_specialization']]  
+y = data['status']  
+
+# Encode categorical variables (if necessary)
+encoder = OneHotEncoder(handle_unknown='ignore')
+X_encoded = encoder.fit_transform(X[['degree_t', 'hsc_b']])
+X = pd.concat([X.drop(['degree_t', 'hsc_b'], axis=1), pd.DataFrame(X_encoded)],  axis=1) 
+
+# Split data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42) 
+
+# Feature scaling (if needed)
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# Model selection (example: Logistic Regression)
+model = LogisticRegression() 
+model.fit(X_train, y_train) 
+
+# Make predictions
+y_pred = model.predict(X_test) 
+
+# Evaluate model performance
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print(classification_report(y_test, y_pred)) 
+
+# For further analysis, you can use feature importance from Random Forest or other techniques 
+rf_model = RandomForestClassifier(random_state=42)
+rf_model.fit(X_train, y_train) 
+print("Feature importances:", rf_model.feature_importances_)
+
